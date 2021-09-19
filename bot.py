@@ -143,9 +143,15 @@ async def hit(ctx):
         with open("count.json", "w") as f:
             json.dump(getcount, f)
 
-        getbank[str(user.id)]["wallet"] -= 50
-        with open("bank.json", "w") as f:
-            json.dump(getbank, f)  # deducts 50 chips & overrites JSON file
+        # fix bank balances bug 9.18.21    
+        if getbank[str(user.id)]["wallet"] < 50:
+            getbank[str(user.id)]["wallet"] -= getbank[str(user.id)]["wallet"]
+            with open("bank.json", "w") as f:
+                json.dump(getbank, f)  # deducts current chips & overwrites JSON file
+        else:
+            getbank[str(user.id)]["wallet"] -= 50
+            with open("bank.json", "w") as f:
+                json.dump(getbank, f)  # deducts 50 chips & overwrites JSON file
 
     else:
         await ctx.send(f"Your card count: {getcount[str(user.id)]['total']}\n"
@@ -268,9 +274,16 @@ async def check(ctx):
             with open("count.json", "w") as f:
                 json.dump(getcount, f)  # game is over, sets users card count to 0 and overwrites JSON file
 
-            getbank[str(user.id)]["wallet"] -= 50
-            with open("bank.json", "w") as f:
-                json.dump(getbank, f)  # overwrites JSON chip value for user to less 50
+        # fix bank balances bug 9.18.21    
+            if getbank[str(user.id)]["wallet"] < 50:
+                getbank[str(user.id)]["wallet"] -= getbank[str(user.id)]["wallet"]
+                with open("bank.json", "w") as f:
+                    json.dump(getbank, f)  # deducts current chips & overwrites JSON file
+            else:
+                getbank[str(user.id)]["wallet"] -= 50
+                with open("bank.json", "w") as f:
+                    json.dump(getbank, f)  # deducts 50 chips & overwrites JSON file
+
 
 
 @bot.command(
